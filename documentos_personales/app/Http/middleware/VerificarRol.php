@@ -1,0 +1,35 @@
+<?php
+// ============================================================
+// VerificarRol — Middleware de control de acceso por rol
+// Ruta: app/Http/Middleware/VerificarRol.php
+// ============================================================
+// Registro en bootstrap/app.php:
+//
+//   ->withMiddleware(function (Middleware $middleware) {
+//       $middleware->alias([
+//           'role' => \App\Http\Middleware\VerificarRol::class,
+//       ]);
+//   })
+// ============================================================
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class VerificarRol
+{
+    public function handle(Request $request, Closure $next, string $rol): Response
+    {
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+
+        if ($request->user()->rol !== $rol) {
+            abort(403, 'No tienes permiso para acceder a esta sección.');
+        }
+
+        return $next($request);
+    }
+}
